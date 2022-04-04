@@ -21,11 +21,13 @@
 // @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.core-3.5.min.js
 // @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.excheck-3.5.min.js
 // @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.exedit-3.5.min.js
+// @require https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/axios/0.26.0/axios.min.js
 
 // ==/UserScript==
 GM_addStyle(GM_getResourceText("pathcss"));
 GM_addStyle(GM_getResourceText("zTreeStyle"));
 GM_addStyle(GM_getResourceText("ztreeCustom"));
+
 
 const currentUrl = window.location.href;
 const baseUrl = window.location.protocol + "//" + window.location.hostname
@@ -67,7 +69,101 @@ class ACGRIP {
 
 }
 
-(function() {
+// tree
+let setting = {
+    view: {
+        showLine: false, //不显示连接线
+        //showIcon: showIconForTree //不显示文件夹图标（调用showIconForTree()）
+    },
+    data: {
+        simpleData: {
+            enable: true
+        }
+    },
+    callback: {
+            beforeDrag: false,
+        onClick: zTreeOnClick
+},
+};
+
+let cachedNode = [];
+async function zTreeOnClick(event, treeId, treeNode) {
+    if (cachedNode.indexOf(treeNode.tId) === -1) {
+        cachedNode.push(treeNode.tId);
+        console.log(event   )
+        // 折叠之后的问题，event
+        // if  get dealed json not empty:
+        let thisTree =  $.fn.zTree.getZTreeObj(treeId)
+        // 获取新的node
+        let newJson = await dealWithPathJson(treeNode.path + '/' + treeNode.name)
+        newJson.forEach((item) => thisTree.addNodes(treeNode, item))
+}
+}
+// todo 整理、格式化代码
+// 修改nodes属性解决折叠的问题
+// 修复css，增加浮动
+// 离线下载 直链、BT
+// 检测登录是否需要
+// 整理到类中
+
+let mydiv=document.createElement("div");
+mydiv.className = 'login'
+mydiv.innerHTML=`
+<div class="content_wrap">
+            <div class="zTreeDemoBackground left">
+                <ul id="sys" class="ztree"></ul>
+            </div>
+        </div>
+        `
+        
+document.body.append(mydiv);
+
+
+function getPathFromCloudreve(path)
+{
+    let finalUrl = `https://pan.yunzd.cf/api/v3/directory${encodeURIComponent(path)}`
+    return new Promise((resolve, reject) => { 
+        GM_xmlhttpRequest({
+        method: "GET",
+        url: finalUrl,
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        },
+        onload: function(response){
+            console.log("成功");
+            resolve(response.response)
+        },
+        onerror: function(response){
+            console.log("失败");
+            resolve(response.response)
+        }
+    }
+);
+    })
+}
+
+async function dealWithPathJson(path) {
+    let response = await getPathFromCloudreve(path);
+    let after = []
+    response = JSON.parse(response).data.objects;
+    for(let item of response) {
+        if (item.type === 'file') {
+            console.log(1)
+            continue;
+        }
+        delete item.size;
+        delete item.pic;
+        delete item.date;
+        delete item.id;
+        after.push(item)
+}
+return after
+}
+
+
+
+
+(async function() {
     'use strict';
     const ACGInstance = new ACGRIP();
     //let name = $(".table.table-hover.table-condensed.post-index .action").each( (index,item)=>console.log( $($(item)[0])).firstChild );
@@ -109,86 +205,12 @@ class ACGRIP {
     // get storage
 
     // get paths https://pan.yunzd.cf/api/v3/directory%2F
-    function dealPathJson(path='/') {
-        let finalUrl = `https://pan.yunzd.cf/api/v3/directory${encodeURIComponent(path)}`
-        let after = [];
-        GM_xmlhttpRequest({
-        method: "GET",
-        url: finalUrl,
-        headers: {
-            "Content-Type": "application/json; charset=utf-8"
-        },
-        onload: function(response){
-            console.log("成功");
-            let myjson = JSON.parse(response.response).data.objects;
-            for(let item of myjson) {
-                if (item.type === 'file') {
-                    continue;
-                }
-                item.cache = 0;
-                delete item.size;
-                delete item.pic;
-                delete item.date;
-                delete item.id;
-                after.push(item)
-            }
 
-            console.log(typeof myjson)
-            console.log(after)
-        },
-        onerror: function(response){
-            console.log("失败");
-        }
-    });
-        return after;
-    }
+    let initJson = await dealWithPathJson('/')
 
-    dealPathJson();
-
-    // tree
-    let setting = {
-        view: {
-            showLine: false, //不显示连接线
-            //showIcon: showIconForTree //不显示文件夹图标（调用showIconForTree()）
-        },
-        data: {
-            simpleData: {
-                enable: true
-            }
-        },
-        callback: {
-               beforeDrag: false,
-            onClick: zTreeOnClick
-    },
-    };
-
-    let cachedNode = [];
-    function zTreeOnClick(event, treeId, treeNode) {
-        if (cachedNode.indexOf(treeNode.tId) === -1) {
-            cachedNode.push(treeNode.tId);
-            // imitate
-            // 折叠之后的问题，event
-            // if  get dealed json not empty:
-            let thisTree =  $.fn.zTree.getZTreeObj(treeId)
-            thisTree.addNodes(treeNode,{ name: 'Music', path: '/', type: 'dir' })
-
-}
-}
-
-    let mydiv=document.createElement("div");
-    mydiv.className = 'login'
-    mydiv.innerHTML=`
-    <div class="content_wrap">
-                <div class="zTreeDemoBackground left">
-                    <ul id="sys" class="ztree"></ul>
-                </div>
-            </div>
-            `
-            
-    document.body.append(mydiv);
-
+    
     $(document).ready(function() {
-        $.fn.zTree.init($("#sys"), setting, after);
+        $.fn.zTree.init($("#sys"), setting, initJson);
     });
 
     // GM_xmlhttpRequest({
