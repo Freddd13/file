@@ -12,7 +12,20 @@
 // @grant           GM_deleteValue
 // @grant           GM_info
 // @grant           GM_xmlhttpRequest
+// @grant      GM_getResourceText
+// @grant      GM_addStyle
+// @resource pathcss https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/css/path.css
+// @resource zTreeStyle https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/css/zTreeStyle/zTreeStyle.css
+// @resource ztreeCustom https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/ztree_custom.css
+// @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/js/jquery-2.1.1.min.js
+// @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.core-3.5.min.js
+// @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.excheck-3.5.min.js
+// @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.exedit-3.5.min.js
+
 // ==/UserScript==
+GM_addStyle(GM_getResourceText("pathcss"));
+GM_addStyle(GM_getResourceText("zTreeStyle"));
+GM_addStyle(GM_getResourceText("ztreeCustom"));
 
 const currentUrl = window.location.href;
 const baseUrl = window.location.protocol + "//" + window.location.hostname
@@ -98,6 +111,7 @@ class ACGRIP {
     // get paths https://pan.yunzd.cf/api/v3/directory%2F
     function dealPathJson(path='/') {
         let finalUrl = `https://pan.yunzd.cf/api/v3/directory${encodeURIComponent(path)}`
+        let after = [];
         GM_xmlhttpRequest({
         method: "GET",
         url: finalUrl,
@@ -107,18 +121,18 @@ class ACGRIP {
         onload: function(response){
             console.log("成功");
             let myjson = JSON.parse(response.response).data.objects;
-            let after = [];
             for(let item of myjson) {
                 if (item.type === 'file') {
                     continue;
                 }
+                item.cache = 0;
                 delete item.size;
                 delete item.pic;
                 delete item.date;
                 delete item.id;
                 after.push(item)
             }
-    
+
             console.log(typeof myjson)
             console.log(after)
         },
@@ -126,12 +140,56 @@ class ACGRIP {
             console.log("失败");
         }
     });
-
+        return after;
     }
-    dealPathJson()
 
-    // add tree
+    dealPathJson();
 
+    // tree
+    let setting = {
+        view: {
+            showLine: false, //不显示连接线
+            //showIcon: showIconForTree //不显示文件夹图标（调用showIconForTree()）
+        },
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        callback: {
+               beforeDrag: false,
+            onClick: zTreeOnClick
+    },
+    };
+
+    let cachedNode = [];
+    function zTreeOnClick(event, treeId, treeNode) {
+        if (cachedNode.indexOf(treeNode.tId) === -1) {
+            cachedNode.push(treeNode.tId);
+            // imitate
+            // 折叠之后的问题，event
+            // if  get dealed json not empty:
+            let thisTree =  $.fn.zTree.getZTreeObj(treeId)
+            thisTree.addNodes(treeNode,{ name: 'Music', path: '/', type: 'dir' })
+
+}
+}
+
+    let mydiv=document.createElement("div");
+    mydiv.className = 'login'
+    mydiv.innerHTML=`
+    <div class="content_wrap">
+                <div class="zTreeDemoBackground left">
+                    <ul id="sys" class="ztree"></ul>
+                </div>
+            </div>
+            `
+            
+    document.body.append(mydiv);
+
+    $(document).ready(function() {
+        $.fn.zTree.init($("#sys"), setting, after);
+    });
 
     // GM_xmlhttpRequest({
     //     method: "GET",
