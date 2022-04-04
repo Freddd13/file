@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ztree</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" type="text/css" href="ztree_v3/css/zTreeStyle/zTreeStyle.css" />
+		<link rel="stylesheet" type="text/css" href="ztree_v3/ztree_custom.css" />
+		<link rel="stylesheet" type="text/css" href="./test.css" />
+		<script src="js/jquery-2.1.1.min.js"></script>
+		<script src="js/test.js"></script>
+		<script src="ztree_v3/js/jquery.ztree.core-3.5.min.js"></script>
+		<script src="ztree_v3/js/jquery.ztree.excheck-3.5.min.js"></script>
+		<script src="ztree_v3/js/jquery.ztree.exedit-3.5.min.js"></script>
+	</head>
+	<body>
+		<!-- <div class="content_wrap">
+			<div class="zTreeDemoBackground left">
+				<ul id="sys" class="ztree"></ul>
+			</div>
+		</div> -->
+	</body>
+	<script type="text/javascript">
+		var setting = {
+			view: {
+				showLine: false, //不显示连接线
+				//showIcon: showIconForTree //不显示文件夹图标（调用showIconForTree()）
+			},
+			data: {
+				simpleData: {
+					enable: true
+				}
+			},
+			callback: {
+           		beforeDrag: false,
+            	onClick: zTreeOnClick
+        },
+		};
+
+
+		// cache
+		cachedNode = [];
+
+		function zTreeOnClick(event, treeId, treeNode) {
+			if (cachedNode.indexOf(treeNode.tId) === -1) {
+				cachedNode.push(treeNode.tId);
+				// imitate
+				// 折叠之后的问题，event
+				// if  get dealed json not empty:
+				let thisTree =  $.fn.zTree.getZTreeObj(treeId)
+				thisTree.addNodes(treeNode,{ name: 'Music', path: '/', type: 'dir' })
+   
+	}
+}
+
+
+let mydiv=document.createElement("div");
+mydiv.className = 'login'
+mydiv.innerHTML=`
+<div class="content_wrap">
+			<div class="zTreeDemoBackground left">
+				<ul id="sys" class="ztree"></ul>
+			</div>
+		</div>
+		`
+document.body.append(mydiv);
+
+
+
+
+
+
+		var nodes = [
+  { name: 'Music', path: '/', type: 'dir' },
+  { name: 'prv', path: '/', type: 'dir' },
+  { name: 'anime', path: '/', type: 'dir' },
+  { name: 'Youtube_Vanced', path: '/', type: 'dir' },
+  { name: 'software', path: '/', type: 'dir' },
+  { name: 'Sheets', path: '/', type: 'dir' },
+  { name: 'slam', path: '/', type: 'dir' },
+  { name: 'RSS', path: '/', type: 'dir' },
+  { name: 'keys', path: '/', type: 'dir' },
+  { name: 'ear', path: '/', type: 'dir' },
+  { name: 'zotero', path: '/', type: 'dir' }
+];
+		/*function showIconForTree(treeId, treeNode) {
+			return !treeNode.isParent;
+		};*/
+		$(document).ready(function() {
+			$.fn.zTree.init($("#sys"), setting, nodes);
+		});
+	</script>
+
+</html>
