@@ -14,13 +14,13 @@
 // @grant           GM_xmlhttpRequest
 // @grant      GM_getResourceText
 // @grant      GM_addStyle
-// @resource pathcss https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/css/path.css
-// @resource zTreeStyle https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/css/zTreeStyle/zTreeStyle.css
-// @resource ztreeCustom https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/ztree_custom.css
-// @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/js/jquery-2.1.1.min.js
-// @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.core-3.5.min.js
-// @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.excheck-3.5.min.js
-// @require https://fastly.jsdelivr.net/gh/Freddd13/file/ztree4cloudreve/ztree_v3/js/jquery.ztree.exedit-3.5.min.js
+// @resource pathcss https://fastly.jsdelivr.net/gh/Freddd13/file@latest/ztree4cloudreve/css/path.css
+// @resource zTreeStyle https://fastly.jsdelivr.net/gh/Freddd13/file@latest/ztree4cloudreve/ztree_v3/css/zTreeStyle/zTreeStyle.css
+// @resource ztreeCustom https://fastly.jsdelivr.net/gh/Freddd13/file@latest/ztree4cloudreve/ztree_v3/ztree_custom.css
+// @require https://fastly.jsdelivr.net/gh/Freddd13/file@latest/ztree4cloudreve/js/jquery-2.1.1.min.js
+// @require https://fastly.jsdelivr.net/gh/Freddd13/file@latest/ztree4cloudreve/ztree_v3/js/jquery.ztree.core-3.5.min.js
+// @require https://fastly.jsdelivr.net/gh/Freddd13/file@latest/ztree4cloudreve/ztree_v3/js/jquery.ztree.excheck-3.5.min.js
+// @require https://fastly.jsdelivr.net/gh/Freddd13/file@latest/ztree4cloudreve/ztree_v3/js/jquery.ztree.exedit-3.5.min.js
 // @require https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/axios/0.26.0/axios.min.js
 
 // ==/UserScript==
@@ -97,7 +97,6 @@ async function zTreeOnClick(event, treeId, treeNode) {
 }
 }
 // todo 整理、格式化代码
-// 修改nodes属性解决折叠的问题
 // 修复css，增加浮动
 // 离线下载 直链、BT
 // 检测登录是否需要
