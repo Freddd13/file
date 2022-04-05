@@ -90,9 +90,6 @@ let cachedNode = [];
 async function zTreeOnClick(event, treeId, treeNode) {
     if (cachedNode.indexOf(treeNode.tId) === -1) {
         cachedNode.push(treeNode.tId);
-        console.log(event   )
-        // 折叠之后的问题，event
-        // if  get dealed json not empty:
         let thisTree =  $.fn.zTree.getZTreeObj(treeId)
         // 获取新的node
         let newJson = await dealWithPathJson(treeNode.path + '/' + treeNode.name)
